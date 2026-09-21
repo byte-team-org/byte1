@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Участники{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">🎯 Участники</h2>
+    <a href="/admin/participants/export" class="btn btn-outline-success">
+        <i class="bi bi-download me-1"></i>Export CSV
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 mb-4" style="border-radius:12px;border:none;box-shadow:0 2px 8px rgba(0,0,0,.07)">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">Регион</label>
+            <select name="region" class="form-select">
+                <option value="">Все регионы</option>
+                {% for r in regions %}
+                <option value="{{ r }}" {% if selected_region == r %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">Статус</label>
+            <select name="status" class="form-select">
+                <option value="">Все</option>
+                <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>⏳ Ожидает</option>
+                <option value="approved" {% if selected_status == 'approved' %}selected{% endif %}>✅ Одобрен</option>
+                <option value="rejected" {% if selected_status == 'rejected' %}selected{% endif %}>❌ Отклонён</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-dark w-100">Фильтр</button>
+        </div>
+        <div class="col-md-2">
+            <a href="/admin/participants" class="btn btn-outline-secondary w-100">Сбросить</a>
+        </div>
+    </form>
+</div>
+
+<!-- Table -->
+<div class="card" style="border-radius:16px;border:none;box-shadow:0 2px 12px rgba(0,0,0,.08)">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>ФИО</th>
+                    <th>Телефон</th>
+                    <th>Username</th>
+                    <th>Регион</th>
+                    <th>Дата рождения</th>
+                    <th>Статус</th>
+                    <th>Дата регистр.</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in participants %}
+                <tr>
+                    <td class="text-muted small">{{ p.id }}</td>
+                    <td class="fw-semibold">{{ p.last_name }} {{ p.first_name }}</td>
+                    <td>{{ p.phone }}</td>
+                    <td>{{ p.username or "—" }}</td>
+                    <td><span class="badge bg-secondary">{{ p.region }}</span></td>
+                    <td>{{ p.birth_date }}</td>
+                    <td>
+                        {% if p.status.value == 'pending' %}<span class="badge bg-warning text-dark">⏳ Ожидает</span>
+                        {% elif p.status.value == 'approved' %}<span class="badge bg-success">✅ Одобрен</span>
+                        {% else %}<span class="badge bg-danger">❌ Отклонён</span>{% endif %}
+                    </td>
+                    <td class="small text-muted">{{ p.created_at.strftime('%d.%m.%Y %H:%M') if p.created_at else '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center text-muted py-4">Нет данных</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer text-muted small">Всего: {{ participants | length }}</div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-4">📊 Dashboard</h2>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card p-4 text-center">
+            <div class="display-4 fw-bold text-primary">{{ total_participants }}</div>
+            <div class="text-muted mt-1">Всего участников</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card p-4 text-center">
+            <div class="display-4 fw-bold text-success">{{ total_volunteers }}</div>
+            <div class="text-muted mt-1">Всего волонтёров</div>
+        </div>
+    </div>
+</div>
+
+<h5 class="fw-semibold mb-3">📍 Заполненность по регионам</h5>
+<div class="row g-3">
+{% for r in regions %}
+<div class="col-md-4">
+    <div class="card stat-card p-3">
+        <div class="fw-bold mb-2">{{ r.region_name }}</div>
+        <div class="mb-1 small text-muted">Участники</div>
+        <div class="progress mb-2" style="height:10px">
+            <div class="progress-bar bg-primary" style="width: {{ (r.current_participants / r.max_participants * 100) | round }}%"></div>
+        </div>
+        <div class="d-flex justify-content-between small">
+            <span>{{ r.current_participants }} / {{ r.max_participants }}</span>
+            <span class="{% if r.current_participants >= r.max_participants %}text-danger fw-bold{% endif %}">
+                {% if r.current_participants >= r.max_participants %}FULL{% endif %}
+            </span>
+        </div>
+        <hr class="my-2">
+        <div class="mb-1 small text-muted">Волонтёры</div>
+        <div class="progress mb-2" style="height:10px">
+            <div class="progress-bar bg-success" style="width: {{ (r.current_volunteers / r.max_volunteers * 100) | round }}%"></div>
+        </div>
+        <div class="d-flex justify-content-between small">
+            <span>{{ r.current_volunteers }} / {{ r.max_volunteers }}</span>
+            <span class="{% if r.current_volunteers >= r.max_volunteers %}text-danger fw-bold{% endif %}">
+                {% if r.current_volunteers >= r.max_volunteers %}FULL{% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}
