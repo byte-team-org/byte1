@@ -3,9 +3,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import DeclarativeBase
 from bot.config import settings
 
-# Supabase (and most cloud PG providers) require SSL
-_ssl_ctx = ssl.create_default_context()
-_connect_args = {"ssl": _ssl_ctx}
+# Use asyncpg-native SSL (works with Supabase, Railway, etc.)
+_connect_args = {"ssl": "require"}
 
 engine = create_async_engine(
     settings.DATABASE_URL,
