@@ -1,0 +1,61 @@
+services:
+  # ── Telegram Bot ──────────────────────────────────────────────────────────────
+  - type: worker
+    name: byte-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m bot.main
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: byte-db
+          property: connectionString
+      - key: ADMIN_CHAT_ID
+        sync: false
+      - key: CARD_NUMBER
+        sync: false
+      - key: CARD_HOLDER
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+
+  # ── Admin Panel ───────────────────────────────────────────────────────────────
+  - type: web
+    name: byte-admin
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn admin.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: byte-db
+          property: connectionString
+      - key: SECRET_KEY
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_CHAT_ID
+        sync: false
+      - key: CARD_NUMBER
+        sync: false
+      - key: CARD_HOLDER
+        sync: false
+
+# ── PostgreSQL Database ───────────────────────────────────────────────────────
+databases:
+  - name: byte-db
+    plan: free
